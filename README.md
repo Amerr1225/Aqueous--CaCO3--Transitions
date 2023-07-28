@@ -1,6 +1,6 @@
 # Aqueous--CaCO3--Transitions  
 Model which simulates the transition of calcite to aragonite in water  
-Takes in parameters including   
+Takes in parameters including,   
 -Masses for calcite and aragonite   
 -Temperature  
 -pH  
