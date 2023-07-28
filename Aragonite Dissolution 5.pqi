@@ -1,0 +1,93 @@
+DATABASE C:\Program Files (x86)\USGS\Phreeqc Interactive 3.7.3-15968\database\wateq4f.dat
+TITLE --Aragonite Conversion 2 Electric Boogaloo
+##########################################################################################
+# This is another model for the conversion of Aragonite and Calcite this time using the  #
+# rate equation,                                                                         #
+#                                   R = k(1 - SI_C)^n                                    #
+#                                   R = k(1 - SI_A)^n                                    #
+#                                                                                        #
+# From the paper by James G. Acker, Robert H. Byrne, Samuel Ben-Yaakov, Richard A. Feely #
+# and Peter R. Betzer                                                                    #
+##########################################################################################
+
+SOLUTION 1
+    temp       18
+    pH         6.5
+    units      mmol/L
+    density    1
+    Alkalinity 5
+    -water     0.01
+
+EQUILIBRIUM_PHASES 1
+    Aragonite 0.0 0.0004995
+    CO2(g) -3.5 10
+SAVE Solution 1
+SOLUTION 2
+    temp       18
+    pH         6.5
+    units      mmol/L
+    density    1
+    Alkalinity 5
+    -water     0.01
+
+EQUILIBRIUM_PHASES 1
+    Calcite 0.0 0.0004995
+    CO2(g) -3.5 10
+SAVE Solution 1
+MIX 1
+    1 0.5
+    2 0.5
+SAVE Solution 3
+
+END 
+
+RATES 1
+    Aragonite
+    -start
+    10 IF (TOTAL_TIME <= parm(4)) THEN k = 10^parm(1)
+    20 IF (TOTAL_TIME > parm(4)) THEN k = 10^parm(2)
+    30 n = parm(3)
+    40 A = 100000 * 100.09 * KIN("Aragonite")
+    50 R = (k *A *  (1 - SR("Aragonite"))^n)
+    60 SAVE R * time
+    -end
+    Calcite
+    -start
+    10 IF (TOTAL_TIME <= parm(4)) THEN k = 10^parm(1)
+    20 IF (TOTAL_TIME > parm(4)) THEN k = 10^parm(2)
+    30 n = parm(3)
+    40 A = 100000 * 100.09 * KIN("Calcite")
+    50 R = (k *A *  (1 - SR("Calcite"))^n)
+    60 SAVE R * time
+    -end
+
+
+KINETICS 1
+    Aragonite
+        -formula  CaCO3 1
+        -m0       0.0004995
+        -parms    -8.34 -10.19 3 5040
+        -tol      1e-08
+    Calcite
+        -formula  CaCO3 1
+        -m0       0.0002575
+        -parms    -8.48 -10.33 5 5040
+        -tol      1e-08
+-steps    150 hour in 10000
+-step_divide 1
+-runge_kutta 6
+-bad_step_max 500
+INCREMENTAL_REACTIONS true
+
+USE Solution 3
+
+SELECTED_OUTPUT 1
+    -file                 AragoniteDissolution5.sel
+    -high_precision       true
+    -reset                false
+    -time                 true
+    -saturation_indices   Aragonite  Calcite
+    -kinetic_reactants    Aragonite  Calcite
+    -pH                   true
+
+END
