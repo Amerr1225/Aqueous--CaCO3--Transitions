@@ -149,12 +149,19 @@ def plot_data(time, SI_ara, SI_cal, Ara, dAra, Cal, dCal, pH, t_unit, xLimits, y
 
     #Calculate the mole fractions
     Null = [0] * len(time)
-    totmol = Ara[0] 
+    totmol1 = Ara[0] + Cal[0] 
+    totmol2 = Ara[0]
     stepsize = TTime / TSteps
 
-    χ_ara = [(a / totmol) for a in Ara]
-    # χ_Cal = [(c / totmol) for c in Cal]
-    χ_cal = [1 - χ for χ in χ_ara]
+    # Percent composition of the solid mixture
+    χ_ara1 = [(a / totmol1) for a in Ara]
+    # χ_cal1 = [(c / totmol1) for c in Cal]
+    χ_cal1 = [1 - χ for χ in χ_ara1]
+
+    # Percentage of Aragonite Converted
+    χ_ara2 = [(a / totmol2) for a in Ara]
+    # χ_cal2 = [(c / totmol2) for c in Cal]
+    χ_cal2 = [1 - χ for χ in χ_ara2]
 
     xlims = xLimits
     ylims = yLimits
@@ -162,7 +169,7 @@ def plot_data(time, SI_ara, SI_cal, Ara, dAra, Cal, dCal, pH, t_unit, xLimits, y
     Titles = Titles
     Labs = Labels
 
-    lists = [Ara, Cal, dAra, dCal, χ_ara, χ_cal, SI_ara, SI_cal, pH]
+    lists = [Ara, Cal, dAra, dCal, χ_ara1, χ_cal1, χ_ara2, χ_cal2, SI_ara, SI_cal, pH]
 
     # Great globals dictionary
     for i in range(len(lists)):
@@ -497,15 +504,15 @@ if __name__ == '__main__':
     yLimits = [0, 0]
     Limits = [[False, False],[False, False],[False, False],[False, False],[False, False],[False, False]]
     numplots = 6
-    Titles = ["Aragonite and Clacite Over Time", "Aragonite and Clacite Over Time", "Rate of Change Over Time", "Relative Levels Over Time", "Saturations Over Time", "pH of Solution"]
-    Labels = ["Amount of Solid (mol)","Amount of Solid (mol)", "Rate of Dissolution (mol/h)", "Mole Fraction","Saturation Index", "pH"]
+    Titles = ["Aragonite and Clacite Over Time", "Rate of Change Over Time", "Composition of Solid Mixture", "Percentage Converted", "Saturations Over Time", "pH of Solution"]
+    Labels = ["Amount of Solid (mol)", "Rate of Dissolution (mol/h)", "Mole Fraction", "Mole Fraction", "Saturation Index", "pH"]
     Legend = [["Aragonite", "Calcite"], ["Aragonite", "Calcite"], ["Aragonite", "Calcite"], ["Aragonite", "Calcite"], ["Aragonite", "Calcite"], ["pH", ""]]
     semi = [True, False, False, False, False, False]
     compare = [True, True, True, True, True, False]
-    datas = [["Ara", "Cal"], ["Ara", "Cal"], ["dAra", "dCal"], ["χ_ara", "χ_cal"], ["SI_ara", "SI_cal"], ["pH", "pH"]]
+    datas = [["Ara", "Cal"], ["dAra", "dCal"], ["χ_ara1", "χ_cal1"], ["χ_ara2", "χ_cal2"], ["SI_ara", "SI_cal"], ["pH", "pH"]]
 
     #Dictionary
-    dictionary = ["Ara", "Cal", "dAra", "dCal", "χ_ara", "χ_cal", "SI_ara", "SI_cal", "pH"]
+    dictionary = ["Ara", "Cal", "dAra", "dCal", "χ_ara1", "χ_cal1", "χ_ara2", "χ_cal2", "SI_ara", "SI_cal", "pH"]
 
     (time, pH, SI_ara, SI_cal, Ara, dAra, Cal, dCal, input_string) = main(Minerals, pHs, temps, Names, units, Wmasses, Smasses, CO2s, CO2eq, alkalinity,
                                                                           Eqconstants1, Eqconstants2, Orders, chngTime, Surface_Areas,
