@@ -1,6 +1,6 @@
 """
-The following python code is a conversion of AragoniteDissolution5. A PHREEQC input file which
-I wish to convert to PHREEQPY code.
+The following python code is based of of a PHREEQC input file which I wrote. Using PHREEQPY it runs and plots in a python environment.
+The Model below simulates the transition between Aragonite and Calcite in water.
 """
 
 import numpy as np
@@ -222,7 +222,7 @@ def plot_data(time, SI_ara, SI_cal, Ara, dAra, Cal, dCal, pH, t_unit, xLimits, y
 
     # Create a 3x2 grid to display the plots side by side
     fig, axes = plt.subplots(nrows = nrows, ncols = ncols, figsize=(15 ,5 * nrows))
-    fig.suptitle("Sample Data", fontsize=16)
+    fig.suptitle("Plotted Data", fontsize=16)
 
     # Create a 3x2 grid to display the plots side by side
     count = 0

@@ -1,6 +1,6 @@
 """
-The following python code is a conversion of AragoniteDissolution5. A PHREEQC input file which
-I wish to convert to PHREEQPY code.
+The following python code is based of of a PHREEQC input file which I wrote. Using PHREEQPY it runs and plots in a python environment.
+The Model below simulates the transition between Aragonite and Calcite in water.
 """
 
 import numpy as np
