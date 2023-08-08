@@ -1,6 +1,6 @@
 """
-The following python code is based of of a PHREEQC input file which I wrote. Using PHREEQPY it runs and plots in a python environment.
-The Model below simulates the transition between Aragonite and Calcite in water.
+The following python code is a conversion of AragoniteDissolution5. A PHREEQC input file which
+I wish to convert to PHREEQPY code.
 """
 
 import numpy as np
@@ -263,7 +263,7 @@ def plot_data(time, SI_ara, SI_cal, Ara, dAra, Cal, dCal, pH, t_unit, xLimits, y
     # Show the grid plot
     plt.show()
 
-def Generate_Solutions(Name, temp = "20", pH = "7", units = "mmol/L", density = "1",alkalinity = 0, mass = "1"):
+def Generate_Solutions(Name, temp = "20", pH = "7", units = "mmol/L", density = "1",alkalinity = 0, mass = "1", Components = [] ,preset = "Null"):
     """
     This function generates a solution which will be saved and returned to main.
     Name == Name of soltuion
@@ -274,15 +274,46 @@ def Generate_Solutions(Name, temp = "20", pH = "7", units = "mmol/L", density = 
     mass= = mass of solvent in kg
     """
 
-    Solution = (
-        "SOLUTION " + Name + "\n" 
-        + "    temp       "+ temp + "\n" 
-        + "    pH         " + pH + "\n"  
-        + "    units      "+ units + "\n"
-        + "    density    " + density+ "\n" 
-        + "    Alkalinity " + alkalinity + "\n"
-        + "    -water     " + mass
-        + "\n\n" )
+    if preset.lower() == 'salt':
+        Solution = (
+            "SOLUTION " + Name + "\n" 
+            + "    temp        "+ temp + "\n" 
+            + "    pH          8.22 \n"
+            + "    density     1.023 \n"
+            + "    units       ppm \n"
+            + "    Ca          412.3 \n"
+            + "    Mg          1291.8 \n"
+            + "    K           399.1 \n"
+            + "    Si          4.28 \n"
+            + "    Cl          19353.0 \n"
+            + "    Alkalitnity 141.682 as HCO3 \n"
+            + "    S(6)        2712.0 \n"
+            + "    -water      " + mass  
+            + "\n\n" )
+        
+    elif preset.lower() == 'pure':
+        Solution = (
+            "SOLUTION " + Name + "\n" 
+            + "    temp       "+ temp + "\n" 
+            + "    pH         " + "7.0" + "\n"  
+            + "    -water     " + mass
+            + "\n\n" )
+
+    else:   
+        Solution = (
+            "SOLUTION " + Name + "\n" 
+            + "    temp       "+ temp + "\n" 
+            + "    pH         " + pH + "\n"  
+            + "    units      "+ units + "\n"
+            + "    density    " + density+ "\n" 
+            + "    Alkalinity " + alkalinity + "\n")
+            
+        for i in range(len(Components)):
+            Solution = (Solution 
+                        + "    " + Components[i][0] + "         " + Components[i][1] + "\n")
+           
+        Solution =  (Solution + "    -water     " + mass
+                    + "\n\n" )
     
     return Solution
 
@@ -452,7 +483,7 @@ def Generate_Input(Solution_1 = "", Solution_2 = "", Solution_3 = "", Eq1 = "", 
     return input_string
 
 def main(Minerals, pHs, temps, Names, units, Wmasses, Smasses, CO2s, CO2eq, alkalinity,
-         Eqconstants1, Eqconstants2, Orders, chngTime, Surface_Areas,Molar_masses, 
+         Eqconstants1, Eqconstants2, Orders, chngTime,  Surface_Areas, Components1, Components2, presets, Molar_masses, 
          Time, Steps, LUnit, Tolerance, xLimits, yLimits, Limits, Titles, Labels):
     
     start_time = tim.time()
@@ -464,8 +495,8 @@ def main(Minerals, pHs, temps, Names, units, Wmasses, Smasses, CO2s, CO2eq, alka
     """
     plt.style.use('default')
     ### Make and mix Solutions
-    Solution_1 = Generate_Solutions(Names[0], temp = temps[0], pH = pHs[0], units = units[0], alkalinity = alkalinity[0], mass = Wmasses[0])
-    Solution_2 = Generate_Solutions(Names[1], temp = temps[1], pH = pHs[1], units = units[1], alkalinity = alkalinity[0], mass = Wmasses[1])
+    Solution_1 = Generate_Solutions(Names[0], temp = temps[0], pH = pHs[0], units = units[0], alkalinity = alkalinity[0], mass = Wmasses[0], preset = presets[0], Components = Components1)
+    Solution_2 = Generate_Solutions(Names[1], temp = temps[1], pH = pHs[1], units = units[1], alkalinity = alkalinity[0], mass = Wmasses[1], preset = presets[1], Components = Components2)
     Solution_3 = Mixer(Names[0], Ratio_1 = 0.5)
     Eq1 = Equilibrate(Names[0], Minerals[0], Addsolid = Smasses[0], CO2 = CO2s[0], CO2eq = CO2eq[0])
     Eq2 = Equilibrate(Names[0], Minerals[1], Addsolid = Smasses[1], CO2 = CO2s[1], CO2eq = CO2eq[1])
@@ -501,6 +532,9 @@ if __name__ == '__main__':
     CO2s = [["CO2(g)", "-3.5", "10"], ["CO2(g)", "-3.5", "10"]]
     CO2eq = [True, True]
     alkalinity = ["5", "5"]
+    Components1 = [] #List of minerals followed by their concentration
+    Components2 = []   # Eg.  [F, 10] is flouride with a concentration of 10
+    presets = ["", ""]
 
 
     ###Kinetics information
@@ -526,6 +560,6 @@ if __name__ == '__main__':
     Labels = ["Amount of Solid (mol)","Amount of Solid (mol)", "Saturation Index", "Mole Fraction", "pH", "Rate of Dissolution (mol/h)"]
 
     (time, pH, SI_ara, SI_cal, Ara, dAra, Cal, dCal, input_string) = main(Minerals, pHs, temps, Names, units, Wmasses, Smasses, CO2s, CO2eq, alkalinity,
-                                                                          Eqconstants1, Eqconstants2, Orders, chngTime, Surface_Areas,
+                                                                          Eqconstants1, Eqconstants2, Orders, chngTime, Surface_Areas, Components1, Components2, presets,
                                                                           Molar_masses, Time, Steps, LUnit, Tolerance,
                                                                           xLimits, yLimits, Limits, Titles, Labels )
