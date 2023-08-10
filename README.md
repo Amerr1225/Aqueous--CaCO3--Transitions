@@ -19,3 +19,7 @@ The model allows one to customise their own solutions composition, pH, density, 
 The data is saved in a file called data1.dat which one can use to replot the data if wanted. The program also plots the data itself.
 
 The Phreeqc guide goes into the details of how phreeqc works and the inner workings of both the phreeqc input file and the phreeqpy codes.
+
+The sample data folder has data for both the salt and pure presets and then fresh water with an alkalinity set to 5. All of these runs had 0.05g of Aragonite and Calcite reacting and the solutions are equlibrated with CO2 before the kinetics is run. The reaction runs for 150 hours and has one million steps.
+
+Hopefully this code provides some value either as a jumping of point for more refined modeling or as a tool to learn and experiment with phreeqc software and phreeqpy implementation.
